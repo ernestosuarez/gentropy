@@ -3,7 +3,7 @@ package entropy_test
 import (
 	"flag"
 	"fmt"
-    "github.com/ernestosuarez/gentropy/entropy"
+	"github.com/ernestosuarez/gentropy/entropy"
 	"testing"
 )
 
@@ -14,15 +14,13 @@ func TestEntro(t *testing.T) {
 	flag.Parse()
 	path := *pathPtr
 
-	sequence, _ := entropy.ReadSequence1D(path)
 	sequenceND := entropy.ReadSequenceND(path)
 
-	fmt.Println("ML entorpy 1 var: ", entropy.EntropyML(sequence))
-	fmt.Println("ML entorpy n var: ", entropy.EntropyML(sequenceND), "\n")
+	fmt.Println("\nML entropy: ", entropy.EntropyML(sequenceND), "\n")
 
-	fmt.Println("MM entorpy 1 var: ", entropy.EntropyMM(sequence))
-	fmt.Println("MM entorpy n var: ", entropy.EntropyMM(sequenceND), "\n")
+	fmt.Println("MM entropy: ", entropy.EntropyMM(sequenceND), "\n")
 
-	fmt.Println("ChaoShen entorpy 1 var: ", entropy.EntropyChaoShen(sequence))
-	fmt.Println("ChaoShen entorpy n var: ", entropy.EntropyChaoShen(sequenceND), "\n")
+	fmt.Println("ChaoShen entropy: ", entropy.EntropyChaoShen(sequenceND), "\n")
+
+	//fmt.Println("MIE entorpy n var: ", entropy.EntropyMIE(sequenceND, " ", 3), "\n")
 }

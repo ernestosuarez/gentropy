@@ -16,7 +16,7 @@ func check(e error) {
 // ReadSequenceNx1 Reads a whole file into memory
 // with N rows and 1 column (Nx1) and returns the
 // sequence as []string (alias SequenceNx1)
-func ReadSequence1D(path string) (Sequence1D, error) {
+func ReadSequence1D(path string) ([]string, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -35,7 +35,7 @@ func ReadSequence1D(path string) (Sequence1D, error) {
 // ReadSequenceNxM Reads a whole file into memory
 // with N rows and M column (NxM) and returns the whole
 // matrix (NxM) as [][]string (alias SequenceNXM)
-func ReadSequenceND(path string) SequenceND {
+func ReadSequenceND(path string) Sample {
 	lines, err := ReadSequence1D(path)
 	check(err)
 

@@ -3,7 +3,6 @@ package entropy
 import (
 	"bufio"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -14,25 +13,30 @@ func check(e error) {
 	}
 }
 
-// Reads a whole file into memory
-// and returns a slice of its lines.
-func ReadLines(path string) ([]string, error) {
+// ReadSequenceNx1 Reads a whole file into memory
+// with N rows and 1 column (Nx1) and returns the
+// sequence as []string (alias SequenceNx1)
+func ReadSequenceNx1(path string) (SequenceNx1, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
 	defer file.Close()
 
-	var lines []string
+	var sequence []string //sequence
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+		sequence = append(sequence, scanner.Text())
 	}
-	return lines, scanner.Err()
+
+	return sequence, scanner.Err()
 }
 
-func ReadMatrixInt(path string) [][]int {
-	lines, err := ReadLines(path)
+// ReadSequenceNxM Reads a whole file into memory
+// with N rows and M column (NxM) and returns the whole
+// matrix (NxM) as [][]string (alias SequenceNXM)
+func ReadSequenceNxM(path string) SequenceNxM {
+	lines, err := ReadSequenceNx1(path)
 	check(err)
 
 	nRows := len(lines) // number of rows
@@ -53,7 +57,7 @@ func ReadMatrixInt(path string) [][]int {
 		panic("No data found")
 	}
 
-	dataMatrix := make([][]int, nRows)
+	sequence := make([][]string, nRows)
 
 	for i, line := range lines {
 		lineSlice := strings.Fields(line)
@@ -61,16 +65,14 @@ func ReadMatrixInt(path string) [][]int {
 			panic("The number or elemnts should be the same for each row")
 		}
 
-		intRow := make([]int, nCols)
+		row := make([]string, nCols)
 
 		for j, value := range lineSlice {
-			intValue, err := strconv.Atoi(value)
-			check(err)
-			intRow[j] = intValue
+			row[j] = value
 		}
 
-		dataMatrix[i] = intRow
+		sequence[i] = row
 	}
 
-	return dataMatrix
+	return sequence
 }

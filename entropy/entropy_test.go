@@ -3,31 +3,26 @@ package entropy_test
 import (
 	"flag"
 	"fmt"
-	. "github.com/ernestosuarez/gentropy/entropy"
-	"log"
+    "github.com/ernestosuarez/gentropy/entropy"
 	"testing"
 )
 
 func TestEntro(t *testing.T) {
 
 	pathPtr := flag.String("path", "../data/sequence.txt", "Path to the sequence file")
-	//pathPtr := flag.String("path", "./data/sequence.txt", "Path to the sequence file")
-
-	_ = flag.String("estimator", "mle", "Entropy estimator")
 
 	flag.Parse()
 	path := *pathPtr
 
-	sequence, err := ReadSequenceNx1(path)
-	if err != nil {
-		log.Fatal(err)
-	}
+	sequence, _ := entropy.ReadSequence1D(path)
+	sequenceND := entropy.ReadSequenceND(path)
 
-	entro := EntropyML(sequence)
+	fmt.Println("ML entorpy 1 var: ", entropy.EntropyML(sequence))
+	fmt.Println("ML entorpy n var: ", entropy.EntropyML(sequenceND), "\n")
 
-	sequenceND := ReadSequenceNxM(path)
+	fmt.Println("MM entorpy 1 var: ", entropy.EntropyMM(sequence))
+	fmt.Println("MM entorpy n var: ", entropy.EntropyMM(sequenceND), "\n")
 
-	fmt.Println(entro)
-	fmt.Println(EntropyML(sequenceND))
-	fmt.Println(EntropyMM(sequenceND))
+	fmt.Println("ChaoShen entorpy 1 var: ", entropy.EntropyChaoShen(sequence))
+	fmt.Println("ChaoShen entorpy n var: ", entropy.EntropyChaoShen(sequenceND), "\n")
 }

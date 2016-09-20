@@ -16,11 +16,17 @@ func TestEntro(t *testing.T) {
 
 	sequenceND := entropy.ReadSequenceND(path)
 
-	fmt.Println("\nML entropy: ", entropy.EntropyML(sequenceND), "\n")
+	fmt.Println("\nML entropy: ", entropy.ML(sequenceND), "\n")
 
-	fmt.Println("MM entropy: ", entropy.EntropyMM(sequenceND), "\n")
+	fmt.Println("MM entropy: ", entropy.MM(sequenceND), "\n")
 
-	fmt.Println("ChaoShen entropy: ", entropy.EntropyChaoShen(sequenceND), "\n")
+	fmt.Println("ChaoShen entropy: ", entropy.CS(sequenceND), "\n")
+
+	order := 6
+
+	fmt.Println("MIE entropy of order", order, ": ", entropy.MIE(sequenceND, order), "\n")
+
+	//fmt.Println("Coeff: ", entropy.MieCoefficient(10, 5, 2), "\n")
 
 	//fmt.Println("MIE entorpy n var: ", entropy.EntropyMIE(sequenceND, " ", 3), "\n")
 }

@@ -3,6 +3,7 @@ package entropy
 import (
 	"fmt"
 	"math"
+	"sync"
 )
 
 var (
@@ -17,6 +18,8 @@ var (
 
 	//MIE is awsome
 	MIE = MutualInformationExpansion
+
+	mutex sync.Mutex
 )
 
 //Sample is contains a sample of multidimensional variables
@@ -97,51 +100,59 @@ func ChaoShen(s Sample) float64 {
 // up to order maxOrder.
 // See Suarez et al. J. Chem. Theory Comput., 2011, 7 (8), pp 2638–2653
 func MutualInformationExpansion(s Sample, maxOrder int) float64 {
+	var (
+		entro []float64
+		wg    sync.WaitGroup
+		order int
+	)
+
 	Size := s.Size()
 	Nvar := s.Nvar()
-
 	suma := make([]float64, maxOrder)
 
-	var entro []float64
-
-	var order int
 
 	for order = 1; order <= maxOrder; order++ {
 
-		M := make(Sample, Size)
-		for i := range M {
-			M[i] = make([]string, order)
-		}
-
 		for comb := range combinations(Nvar, order) {
-
-			for i := 0; i < Size; i++ {
-				for j := 0; j < order; j++ {
-					M[i][j] = s[i][comb[j]]
+			combCopy := make([]int, order)
+			copy(combCopy, comb)
+			wg.Add(1)
+			go func(combCopy []int) {
+				M := newEmptySample(Size, Nvar)
+				for i := 0; i < Size; i++ {
+					for j := 0; j < order; j++ {
+						M[i][j] = s[i][combCopy[j]]
+					}
 				}
-			}
+				entropySubSet := MaxLikelihood(M)
+				mutex.Lock()
+				suma[order-1] += entropySubSet
+				mutex.Unlock()
+				wg.Done()
+			}(combCopy)
 
-			suma[order-1] += MaxLikelihood(M)
+
 		}
+		wg.Wait()
 
 		entro = make([]float64, maxOrder)
-
 		for i := 1; i <= order; i++ {
 			for j := 1; j <= i; j++ {
 				entro[i-1] += mieCoefficient(Nvar, i, j) * suma[j-1]
 			}
 		}
 
-		//switch order {
-		//case 1:
-		//	fmt.Printf("\nSum of marginal entropies in nats: %f\n", entro[order-1])
-		//case 2:
-		//	fmt.Printf("\n2nd order correction: %v\n", entro[order-1] - entro[order-2])
-		//case 3:
-		//	fmt.Printf("\n3rd order correction: %v\n", entro[order-1] - entro[order-2])
-		//default:
-		//	fmt.Printf("\n%dth order correction: %v\n", order, entro[order-1] - entro[order-2])
-		//}
+		switch order {
+		case 1:
+			fmt.Println("MIE entropy: ")
+			fmt.Printf("Sum of marginal entropies in nats: %.5f\n", entro[order-1])
+		case 2:
+			fmt.Printf("2nd order correction: %.5f\n", entro[order-1]-entro[order-2])
+		case 3:
+			fmt.Printf("3rd order correction: %.5f\n", entro[order-1]-entro[order-2])
+		default:
+			fmt.Printf("%dth order correction: %.5f\n", order, entro[order-1]-entro[order-2])
+		}
 
 	}
 
@@ -165,4 +176,13 @@ func mieCoefficient(Nvar, maxOrder, k int) float64 {
 	}
 	return coeff
 
+}
+
+// NewEmptySample
+func newEmptySample(nRows, nCols int) Sample {
+	M := make(Sample, nRows)
+	for i := range M {
+		M[i] = make([]string, nCols)
+	}
+	return M
 }

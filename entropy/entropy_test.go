@@ -4,11 +4,12 @@ import (
 	"flag"
 	"fmt"
 	"github.com/ernestosuarez/gentropy/entropy"
+	"runtime"
 	"testing"
 )
 
 func TestEntro(t *testing.T) {
-
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	pathPtr := flag.String("path", "../data/sequence.txt", "Path to the sequence file")
 
 	flag.Parse()

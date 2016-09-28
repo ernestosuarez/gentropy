@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"sync"
+	"github.com/ernestosuarez/itertools"
 )
 
 var (
@@ -113,7 +114,7 @@ func MutualInformationExpansion(s Sample, maxOrder int) float64 {
 
 	for order = 1; order <= maxOrder; order++ {
 
-		for comb := range combinations(Nvar, order) {
+		for comb := range itertools.GenCombinations(Nvar, order) {
 			combCopy := make([]int, order)
 			copy(combCopy, comb)
 			wg.Add(1)

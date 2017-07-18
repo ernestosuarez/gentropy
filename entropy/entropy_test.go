@@ -3,7 +3,7 @@ package entropy_test
 import (
 	"flag"
 	"fmt"
-	"github.com/ernestosuarez/gentropy/entropy"
+	"github.com/ernestosuarez/Gentropy/entropy"
 	"runtime"
 	"testing"
 )
